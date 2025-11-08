@@ -1,0 +1,1 @@
+{"root":["../../src/main.tsx","../../src/types/html2pdf.d.ts","../../src/lib/parseresume.ts","../../src/types/resume.ts","../../src/app.tsx","../../src/components/downloadpdfbutton.tsx","../../src/components/templateselector.tsx","../../src/components/templates/classictemplate.tsx"],"errors":true,"version":"5.9.3"}
