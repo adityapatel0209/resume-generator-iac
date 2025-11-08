@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+
+jobs:
+  app-build:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: autoresume-pdf
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+  api-build:
+    name: Build Backend API
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend/api
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+  terraform-validate:
+    name: Terraform Validate
+    if: ${{ hashFiles('infra/*.tf') != '' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Fmt Check
+        run: terraform fmt -check
+
+      - name: Init (no backend)
+        run: terraform init -backend=false
+
+      - name: Validate
+        run: terraform validate
