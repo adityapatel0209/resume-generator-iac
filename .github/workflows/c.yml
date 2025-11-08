@@ -21,10 +21,10 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install deps
+      - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build frontend
         run: npm run build
 
   api-build:
@@ -42,103 +42,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install deps
+      - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build backend
         run: npm run build
-
-  terraform-validate:
-    name: Terraform Validate
-    if: ${{ hashFiles('infra/*.tf') != '' }}
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: infra
-    steps:name: CI
-
-on:
-  push:
-    branches: [ main, dev ]
-  pull_request:
-
-jobs:
-  app-build:
-    name: Build Frontend
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: autoresume-pdf
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install deps
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-  api-build:
-    name: Build Backend API
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Backend/api
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install deps
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-  terraform-validate:
-    name: Terraform Validate
-    # Only run if there's any .tf file in infra/ (prevents the hashFiles error if folder doesn't exist)
-    if: ${{ hashFiles('infra/**/*.tf') != '' }}
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: infra
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Fmt Check
-        run: terraform fmt -check || true
-
-      - name: Init (no backend)
-        run: terraform init -backend=false
-
-      - name: Validate
-        run: terraform validate || true
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Fmt Check
-        run: terraform fmt -check
-
-      - name: Init (no backend)
-        run: terraform init -backend=false
-
-      - name: Validate
-        run: terraform validate
